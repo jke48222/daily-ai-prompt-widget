@@ -4,8 +4,8 @@
 
 A widget for [Übersicht](http://tracesof.net/uebersicht/). The widget itself is
 self-contained in `index.jsx`. Out of the box it rotates through a bundled
-prompt library; connect it to the Claude API (below) to get a fresh,
-personalized prompt generated daily.
+prompt library; connect it to an AI API — Claude, ChatGPT, or Gemini (below) —
+to get a fresh, personalized prompt generated daily.
 
 ![screenshot](screenshot.png)
 
@@ -25,21 +25,30 @@ The widget shown running alongside the full set:
 
 At this point the widget works using the bundled `PROMPTS` library.
 
-## Connect to the Claude API (optional)
+## Connect to an AI API (optional)
 
-The widget runs a small local helper that calls Anthropic's Messages API and
-caches one prompt per day. When the helper is absent or returns nothing, the
-widget falls back to the bundled library, so this step is entirely optional.
+The widget runs a local helper that generates one prompt per day and caches it.
+It supports **Claude, ChatGPT, or Gemini** and auto-detects the provider from
+whichever key file you create (in this order: Claude, then OpenAI, then Gemini).
+With no key it falls back to the bundled `PROMPTS` library.
 
 1. Create the config directory and copy the helper:
    ```sh
    mkdir -p ~/.config/widgetsuite
    cp setup/ai-daily-pull-fetch.py ~/.config/widgetsuite/
    ```
-2. Add your Anthropic API key (from https://console.anthropic.com):
+2. Add **one** API key for the provider you want:
    ```sh
+   # Claude  — https://console.anthropic.com
    printf '%s' 'sk-ant-...' > ~/.config/widgetsuite/anthropic.key
-   chmod 600 ~/.config/widgetsuite/anthropic.key
+
+   # ChatGPT — https://platform.openai.com/api-keys
+   printf '%s' 'sk-...'     > ~/.config/widgetsuite/openai.key
+
+   # Gemini  — https://aistudio.google.com/apikey
+   printf '%s' 'AIza...'    > ~/.config/widgetsuite/gemini.key
+
+   chmod 600 ~/.config/widgetsuite/*.key
    ```
 3. (Optional) tailor the prompt to you by adding a short profile:
    ```sh
@@ -47,6 +56,9 @@ widget falls back to the bundled library, so this step is entirely optional.
    # then edit profile.txt with a few lines about yourself
    ```
 4. Refresh Übersicht.
+
+To force a specific provider when you have more than one key, keep only that
+one key file. Models are set near the top of `ai-daily-pull-fetch.py`.
 
 Your key never leaves your machine and is never committed (see `.gitignore`).
 The model is set near the top of `ai-daily-pull-fetch.py` (`MODEL = ...`).
@@ -61,7 +73,7 @@ The model is set near the top of `ai-daily-pull-fetch.py` (`MODEL = ...`).
 
 - `daily-ai-prompt.widget/index.jsx` — the widget
 - `daily-ai-prompt.widget/logo.png` — logo overlay
-- `setup/ai-daily-pull-fetch.py` — optional Claude helper (no key included)
+- `setup/ai-daily-pull-fetch.py` — optional AI helper for Claude/ChatGPT/Gemini (no key included)
 - `setup/profile.example.txt` — optional profile template
 
 ## Other widgets
