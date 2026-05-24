@@ -13,7 +13,7 @@ personalized prompt generated daily.
 
 The widget shown running alongside the full set:
 
-<video src="https://github.com/jke48222/daily-ai-prompt-widget/raw/main/homescreen.mp4" controls width="100%"></video>
+[![Homescreen demo — click to play](homescreen-poster.png)](homescreen.mp4)
 
 ## Install
 
