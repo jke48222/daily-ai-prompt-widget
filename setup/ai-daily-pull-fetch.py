@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """AI Daily Pull fetcher for the Ubersicht widget.
 
-Generates one daily prompt via Anthropic's Messages API using the same key the
-WidgetSuite host stores in the Keychain (service
-com.jalenedusei.widgetsuite.anthropic), or a plaintext fallback at
-~/.config/widgetsuite/anthropic.key.
+Generates one daily prompt from a large-language-model API and caches it for the
+day in ~/Library/Caches/ws-aipull.json (the API is hit at most once per day).
+Touching ~/Library/Caches/ws-aipull.force makes the next run fetch a fresh
+prompt (the widget's "pull again", up to MAX/day). Prints a single JSON line the
+widget parses, or an empty line to fall back to the bundled prompts.
 
-The result is cached for the day in ~/Library/Caches/ws-aipull.json so the API
-is hit at most once per day. Touching ~/Library/Caches/ws-aipull.force makes the
-next run fetch a fresh prompt (the widget's "pull again", up to MAX/day). Prints
-a single JSON line the widget parses, or an empty line to fall back to the
-bundled prompts (no key / offline / error).
+Provider auto-detection: the first key file found (in this order) wins.
+  ~/.config/widgetsuite/anthropic.key   Claude   (Anthropic Messages API)
+  ~/.config/widgetsuite/openai.key      ChatGPT  (OpenAI Chat Completions API)
+  ~/.config/widgetsuite/gemini.key      Gemini   (Google Generative Language API)
+Claude also falls back to the macOS Keychain service
+com.jalenedusei.widgetsuite.anthropic. With no key, the widget uses its bundled
+prompt library. Override a model below if you like.
 """
 import json
 import os
@@ -20,12 +23,18 @@ import urllib.request
 
 CACHE = os.path.expanduser("~/Library/Caches/ws-aipull.json")
 FORCE = os.path.expanduser("~/Library/Caches/ws-aipull.force")
-KEYFILE = os.path.expanduser("~/.config/widgetsuite/anthropic.key")
 PROFILE = os.path.expanduser("~/.config/widgetsuite/profile.txt")
-MODEL = "claude-opus-4-7"
+CFG = os.path.expanduser("~/.config/widgetsuite")
 MAX = 3
-# Categories aligned to the reader's themes (design/creativity, career/learning,
-# personal reflection). Shown as the widget's tag and steering the day's prompt.
+
+# provider -> (key file, default model, display label)
+PROVIDERS = {
+    "claude": ("anthropic.key", "claude-opus-4-7", "Anthropic"),
+    "openai": ("openai.key",    "gpt-4o",           "OpenAI"),
+    "gemini": ("gemini.key",    "gemini-2.0-flash", "Google"),
+}
+ORDER = ["claude", "openai", "gemini"]
+
 CATEGORIES = ["design", "creativity", "career", "learning",
               "reflection", "mindset", "craft"]
 
@@ -55,26 +64,32 @@ def write_cache(d):
         pass
 
 
-def get_key():
-    # File first (no Keychain prompt). Keychain only as a fallback.
-    try:
-        with open(KEYFILE) as f:
-            k = f.read().strip()
-            if k:
-                return k
-    except Exception:
-        pass
+def keychain_anthropic():
     try:
         r = subprocess.run(
             ["security", "find-generic-password", "-s",
              "com.jalenedusei.widgetsuite.anthropic", "-a", "default", "-w"],
             capture_output=True, text=True, timeout=5)
-        k = r.stdout.strip()
-        if k:
-            return k
+        return r.stdout.strip()
     except Exception:
-        pass
-    return ""
+        return ""
+
+
+def pick_provider():
+    # First key file found wins; Claude also checks the Keychain.
+    for name in ORDER:
+        keyfile, model, label = PROVIDERS[name]
+        try:
+            with open(os.path.join(CFG, keyfile)) as f:
+                k = f.read().strip()
+                if k:
+                    return name, k, model, label
+        except Exception:
+            pass
+    k = keychain_anthropic()
+    if k:
+        return "claude", k, PROVIDERS["claude"][1], PROVIDERS["claude"][2]
+    return None, "", "", ""
 
 
 def read_profile():
@@ -87,20 +102,17 @@ def read_profile():
 
 def system_prompt(category, exclusions, profile):
     lines = [
-        "You write one daily prompt that the reader pastes straight into a Claude",
-        "conversation to get genuinely useful help. Today's theme is %s." % category,
+        "You write one daily prompt that the reader pastes straight into an AI",
+        "chat to get genuinely useful help. Today's theme is %s." % category,
     ]
     if profile:
-        lines.append("")
-        lines.append("Tailor it to this reader:")
-        lines.append(profile)
-        lines.append("")
+        lines += ["", "Tailor it to this reader:", profile, ""]
     lines += [
         "Requirements:",
-        "- Address it to Claude as a request or question Claude can act on: explain,",
-        "  teach, brainstorm, plan, draft, critique, compare, or design something.",
-        "- It must have a clear purpose and lead to something useful. No vague journaling,",
-        "  no self-reflection prompts, nothing the reader would just think about alone.",
+        "- Address it to the assistant as a request or question it can act on:",
+        "  explain, teach, brainstorm, plan, draft, critique, compare, or design.",
+        "- It must have a clear purpose and lead to something useful. No vague",
+        "  journaling, no self-reflection prompts.",
         "- HARD LIMIT: 150 characters or fewer. Keep it tight and specific.",
         "- Themed around the reader's interests, but practical and concrete.",
         "- No em dashes, no semicolons. Return only the prompt text, no quotes, no preface.",
@@ -112,12 +124,14 @@ def system_prompt(category, exclusions, profile):
     return "\n".join(lines)
 
 
+USER_MSG = "Write today's prompt now. One prompt only, 150 characters max, ready to paste."
+
+
 def clamp(s, n=150):
     s = (s or "").strip().strip('"').strip()
     if len(s) <= n:
         return s
     cut = s[:n]
-    # Prefer ending on a sentence, else on a word boundary.
     for end in ".?!":
         i = cut.rfind(end)
         if i >= n * 0.6:
@@ -126,30 +140,60 @@ def clamp(s, n=150):
     return (cut[:sp] if sp > 0 else cut).rstrip(" ,;:")
 
 
-def fetch(category, key, exclusions, profile):
-    body = {
-        "model": MODEL,
-        "max_tokens": 120,
-        "system": system_prompt(category, exclusions, profile),
-        "messages": [{"role": "user",
-                      "content": "Write today's prompt now. One prompt only, 150 characters max, ready to paste into Claude."}],
-    }
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=json.dumps(body).encode("utf-8"),
-        headers={"x-api-key": key, "anthropic-version": "2023-06-01",
-                 "content-type": "application/json"})
+def _post(url, body, headers):
+    req = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"),
+                                 headers=headers)
     with urllib.request.urlopen(req, timeout=20) as resp:
-        data = json.load(resp)
+        return json.load(resp)
+
+
+def fetch_claude(key, model, system):
+    data = _post("https://api.anthropic.com/v1/messages",
+                 {"model": model, "max_tokens": 120, "system": system,
+                  "messages": [{"role": "user", "content": USER_MSG}]},
+                 {"x-api-key": key, "anthropic-version": "2023-06-01",
+                  "content-type": "application/json"})
     for b in data.get("content", []):
         if b.get("type") == "text" and b.get("text"):
-            return clamp(b["text"].strip())
-    raise RuntimeError("no text block")
+            return b["text"]
+    raise RuntimeError("no text")
+
+
+def fetch_openai(key, model, system):
+    data = _post("https://api.openai.com/v1/chat/completions",
+                 {"model": model, "max_tokens": 120,
+                  "messages": [{"role": "system", "content": system},
+                               {"role": "user", "content": USER_MSG}]},
+                 {"Authorization": "Bearer " + key,
+                  "content-type": "application/json"})
+    return data["choices"][0]["message"]["content"]
+
+
+def fetch_gemini(key, model, system):
+    url = ("https://generativelanguage.googleapis.com/v1beta/models/"
+           + model + ":generateContent?key=" + key)
+    data = _post(url,
+                 {"systemInstruction": {"parts": [{"text": system}]},
+                  "contents": [{"role": "user", "parts": [{"text": USER_MSG}]}],
+                  "generationConfig": {"maxOutputTokens": 200}},
+                 {"content-type": "application/json"})
+    return data["candidates"][0]["content"]["parts"][0]["text"]
+
+
+def fetch(provider, key, model, system):
+    if provider == "claude":
+        return clamp(fetch_claude(key, model, system))
+    if provider == "openai":
+        return clamp(fetch_openai(key, model, system))
+    if provider == "gemini":
+        return clamp(fetch_gemini(key, model, system))
+    raise RuntimeError("unknown provider")
 
 
 def emit(d):
     print(json.dumps({"prompt": d.get("prompt"), "category": d.get("category"),
-                      "used": d.get("used", 0), "max": MAX, "source": d.get("source", "")}))
+                      "used": d.get("used", 0), "max": MAX,
+                      "source": d.get("source", "")}))
 
 
 def main():
@@ -162,12 +206,6 @@ def main():
             pass
 
     fresh_day = cache.get("date") != today()
-
-    # Serve today's cached result for every normal tick. Crucially this is the
-    # path taken on the vast majority of refreshes, so we do NOT touch the
-    # Keychain (or the network) again until a new day or a forced pull. Even a
-    # failed attempt is cached for the day, so a bad key/offline state cannot
-    # spam the Keychain prompt.
     if not fresh_day and not force:
         emit(cache)
         return
@@ -175,25 +213,24 @@ def main():
     used = 0 if fresh_day else cache.get("used", 0)
     if force and not fresh_day:
         if used >= MAX:
-            emit(cache)  # out of pulls for today
+            emit(cache)
             return
         used += 1
 
-    key = get_key()
+    provider, key, model, label = pick_provider()
     category = category_for_today()
     recent = cache.get("recent", [])
     profile = read_profile()
     prompt = None
     source = ""
-    if key:
+    if provider:
         try:
-            prompt = fetch(category, key, recent, profile)
-            source = "Anthropic / " + MODEL
+            prompt = fetch(provider, key, model,
+                           system_prompt(category, recent, profile))
+            source = label + " / " + model
         except Exception:
             prompt = None
 
-    # Record the attempt for today regardless of outcome, so the next tick hits
-    # the cached-serve path above instead of retrying (and re-prompting).
     out = {
         "date": today(),
         "prompt": prompt,
