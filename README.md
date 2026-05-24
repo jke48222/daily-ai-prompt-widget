@@ -2,42 +2,61 @@
 
 > One daily AI prompt on a frosted-glass panel; click to copy and open a new chat.
 
-A self-contained widget for [Übersicht](http://tracesof.net/uebersicht/). The
-entire widget lives in `index.jsx` (the shared design system is inlined), so it
-runs on any Mac with no extra files beyond the bundled assets.
+A widget for [Übersicht](http://tracesof.net/uebersicht/). The widget itself is
+self-contained in `index.jsx`. Out of the box it rotates through a bundled
+prompt library; connect it to the Claude API (below) to get a fresh,
+personalized prompt generated daily.
 
 ![screenshot](screenshot.png)
 
 ## Install
 
 1. Install and run [Übersicht](http://tracesof.net/uebersicht/).
-2. Unzip `daily-ai-prompt.widget.zip`, or copy the `daily-ai-prompt.widget` folder into your
-   Übersicht widgets directory:
+2. Unzip `daily-ai-prompt.widget.zip`, or copy the `daily-ai-prompt.widget`
+   folder into your Übersicht widgets directory:
    `~/Library/Application Support/Übersicht/widgets/`
 3. Refresh Übersicht (menu bar icon -> Refresh All).
 
-## Notes
+At this point the widget works using the bundled `PROMPTS` library.
 
-- Rotates through a bundled prompt library by day of year.
-- Optional: install the Instrument Serif and Geist font families for the intended typography; system fonts are used as a fallback.
+## Connect to the Claude API (optional)
+
+The widget runs a small local helper that calls Anthropic's Messages API and
+caches one prompt per day. When the helper is absent or returns nothing, the
+widget falls back to the bundled library, so this step is entirely optional.
+
+1. Create the config directory and copy the helper:
+   ```sh
+   mkdir -p ~/.config/widgetsuite
+   cp setup/ai-daily-pull-fetch.py ~/.config/widgetsuite/
+   ```
+2. Add your Anthropic API key (from https://console.anthropic.com):
+   ```sh
+   printf '%s' 'sk-ant-...' > ~/.config/widgetsuite/anthropic.key
+   chmod 600 ~/.config/widgetsuite/anthropic.key
+   ```
+3. (Optional) tailor the prompt to you by adding a short profile:
+   ```sh
+   cp setup/profile.example.txt ~/.config/widgetsuite/profile.txt
+   # then edit profile.txt with a few lines about yourself
+   ```
+4. Refresh Übersicht.
+
+Your key never leaves your machine and is never committed (see `.gitignore`).
+The model is set near the top of `ai-daily-pull-fetch.py` (`MODEL = ...`).
 
 ## How to edit
 
-Edit the PROMPTS array in index.jsx to change the library. Change the destination URL in the onClick handler in render().
-
-All visual styling (colors, fonts, the card shell, drag/resize handles) is in
-the inlined design-system block at the top of `index.jsx`.
+- Bundled fallback prompts: the `PROMPTS` array in `index.jsx`.
+- Destination on click: the URL in the `onClick` handler in `render()`.
+- All styling is in the inlined design-system block at the top of `index.jsx`.
 
 ## Bundled files
 
-- `index.jsx`
-- `logo.png`
-
-## Submitting to the Übersicht gallery
-
-Create a public GitHub repo with `widget.json`, `daily-ai-prompt.widget.zip`, and a
-258x160 (or 516x320 hi-res) `screenshot.png`, then
-[open an issue](https://github.com/felixhageloh/uebersicht-widgets/issues) with the URL.
+- `daily-ai-prompt.widget/index.jsx` — the widget
+- `daily-ai-prompt.widget/logo.png` — logo overlay
+- `setup/ai-daily-pull-fetch.py` — optional Claude helper (no key included)
+- `setup/profile.example.txt` — optional profile template
 
 ## Author
 

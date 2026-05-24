@@ -1,0 +1,10 @@
+# Never commit API credentials, tokens, or personal data
+*.key
+*.p8
+*-token.txt
+musickit.json
+musickit-devtoken.json
+musickit-auth.html
+profile.txt
+*-cache.json
+.DS_Store
