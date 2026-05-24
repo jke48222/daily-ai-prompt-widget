@@ -1,0 +1,4 @@
+Short reader profile used to tailor the daily prompt (optional).
+Example:
+Product designer learning SwiftUI and front-end. Interested in typography,
+design systems, and shipping small tools. Prefers concise, practical prompts.
