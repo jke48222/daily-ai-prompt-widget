@@ -71,8 +71,7 @@ The model is set near the top of `ai-daily-pull-fetch.py` (`MODEL = ...`).
 
 ## Bundled files
 
-- `daily-ai-prompt.widget/index.jsx` — the widget
-- `daily-ai-prompt.widget/logo.png` — logo overlay
+- `daily-ai-prompt.widget/index.jsx` — the widget (provider logos are inline SVG)
 - `setup/ai-daily-pull-fetch.py` — optional AI helper for Claude/ChatGPT/Gemini (no key included)
 - `setup/profile.example.txt` — optional profile template
 

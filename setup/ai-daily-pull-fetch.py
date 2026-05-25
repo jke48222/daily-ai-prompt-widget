@@ -25,6 +25,7 @@ CACHE = os.path.expanduser("~/Library/Caches/ws-aipull.json")
 FORCE = os.path.expanduser("~/Library/Caches/ws-aipull.force")
 PROFILE = os.path.expanduser("~/.config/widgetsuite/profile.txt")
 CFG = os.path.expanduser("~/.config/widgetsuite")
+SELECT = os.path.expanduser("~/.config/widgetsuite/ai-provider.txt")
 MAX = 3
 
 # provider -> (key file, default model, display label)
@@ -75,20 +76,42 @@ def keychain_anthropic():
         return ""
 
 
+def read_selection():
+    # The widget's logo switcher writes the chosen provider here.
+    try:
+        with open(SELECT) as f:
+            s = f.read().strip().lower()
+            return s if s in PROVIDERS else ""
+    except Exception:
+        return ""
+
+
+def key_for(name):
+    keyfile = PROVIDERS[name][0]
+    try:
+        with open(os.path.join(CFG, keyfile)) as f:
+            k = f.read().strip()
+            if k:
+                return k
+    except Exception:
+        pass
+    if name == "claude":
+        return keychain_anthropic()
+    return ""
+
+
 def pick_provider():
-    # First key file found wins; Claude also checks the Keychain.
+    # Honor the widget's explicit selection when that provider has a key;
+    # otherwise fall back to the first configured provider in ORDER.
+    selected = read_selection()
+    if selected:
+        k = key_for(selected)
+        if k:
+            return selected, k, PROVIDERS[selected][1], PROVIDERS[selected][2]
     for name in ORDER:
-        keyfile, model, label = PROVIDERS[name]
-        try:
-            with open(os.path.join(CFG, keyfile)) as f:
-                k = f.read().strip()
-                if k:
-                    return name, k, model, label
-        except Exception:
-            pass
-    k = keychain_anthropic()
-    if k:
-        return "claude", k, PROVIDERS["claude"][1], PROVIDERS["claude"][2]
+        k = key_for(name)
+        if k:
+            return name, k, PROVIDERS[name][1], PROVIDERS[name][2]
     return None, "", "", ""
 
 
