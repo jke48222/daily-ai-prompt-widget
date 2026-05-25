@@ -7,13 +7,13 @@ self-contained in `index.jsx`. Out of the box it rotates through a bundled
 prompt library; connect it to an AI API — Claude, ChatGPT, or Gemini (below) —
 to get a fresh, personalized prompt generated daily.
 
-![screenshot](screenshot.png)
+![screenshot](media/screenshot.png)
 
 ### On the desktop
 
 The widget shown running alongside the full set:
 
-[![Homescreen demo — click to play](homescreen-poster.png)](homescreen.mp4)
+[![Homescreen demo — click to play](media/homescreen-poster.png)](media/homescreen.mp4)
 
 ## Install
 

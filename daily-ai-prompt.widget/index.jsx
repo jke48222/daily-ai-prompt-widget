@@ -562,18 +562,24 @@ export const render = (props) => {
   if (isLoading(props)) return <Skel tint={T.tintPurple} />;
   const prompt = parseHost(props.output) || PROMPTS[dayOfYear() % PROMPTS.length];
   const active = getProvider(props.output);
-  const chat = PROVIDER_CHAT[active] || PROVIDER_CHAT.claude;
 
   const sig = JSON.stringify({ prompt, active });
   if (sig === __aiSig && __aiEl) return __aiEl;
   __aiSig = sig;
 
+  // Resolve the chat URL at click time (not render time) so switching the model
+  // via the logo redirects to that provider even though the element is memoized.
+  const openChat = () => {
+    const p = getProvider(props.output);
+    const url = PROVIDER_CHAT[p] || PROVIDER_CHAT.claude;
+    run(`printf %s ${shq(prompt)} | pbcopy; open ${shq(url)}`);
+  };
+
   return (__aiEl = (
     <div aria-label={`Daily prompt: ${prompt}`}>
       <DragHandle k="aiDailyPull" />
       <ResizeHandle k="aiDailyPull" />
-      <div className="wrap"
-           onClick={() => run(`printf %s ${shq(prompt)} | pbcopy; open ${shq(chat)}`)}>
+      <div className="wrap" onClick={openChat}>
         <div className="prompt">{prompt}</div>
       </div>
       <Switcher active={active} />
