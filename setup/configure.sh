@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Interactive, idempotent setup for Daily AI Prompt. Invoked by install.sh.
+# Stores an optional API key in ~/.config/widgetsuite. Without a key the widget
+# shows a great prompt from its bundled library, so this is entirely optional.
+set -euo pipefail
+CFG="${CFG:-$HOME/.config/widgetsuite}"
+mkdir -p "$CFG"
+
+echo "Daily AI Prompt can generate a fresh daily prompt with Claude, ChatGPT, or"
+echo "Gemini. With no key it uses a high-quality built-in prompt library."
+printf "Set up an API key now? [y/N] "; read -r ans
+case "$ans" in
+  y|Y) ;;
+  *) echo "    Using the bundled prompt library."; exit 0 ;;
+esac
+
+echo "  1) Claude  (Anthropic)"
+echo "  2) ChatGPT (OpenAI)"
+echo "  3) Gemini  (Google)"
+printf "Choose 1-3: "; read -r choice
+case "$choice" in
+  1) prov=claude; file=anthropic.key ;;
+  2) prov=openai; file=openai.key ;;
+  3) prov=gemini; file=gemini.key ;;
+  *) echo "    Skipped."; exit 0 ;;
+esac
+
+if [ -s "$CFG/$file" ]; then
+  printf "%s already exists. Overwrite? [y/N] " "$file"; read -r ow
+  case "$ow" in
+    y|Y) ;;
+    *) printf '%s' "$prov" > "$CFG/ai-provider.txt"; echo "    Kept existing key; set active provider to $prov."; exit 0 ;;
+  esac
+fi
+
+printf "Paste your %s API key (input hidden): " "$prov"; read -rs key; echo
+if [ -z "$key" ]; then echo "    No key entered; skipped."; exit 0; fi
+printf '%s' "$key" > "$CFG/$file"
+chmod 600 "$CFG/$file"
+printf '%s' "$prov" > "$CFG/ai-provider.txt"
+echo "    Saved $CFG/$file and set active provider to $prov."
+echo "    (You can switch providers anytime by clicking the logo on the widget.)"
+
+printf "Add a short profile to personalize prompts? [y/N] "; read -r pf
+case "$pf" in
+  y|Y)
+    echo "Type a sentence or two about you (interests, role, goals). End with Ctrl-D:"
+    cat > "$CFG/profile.txt"
+    echo "    Saved $CFG/profile.txt." ;;
+esac
