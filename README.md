@@ -101,19 +101,23 @@ The model is set near the top of `ai-daily-pull-fetch.py` (`MODEL = ...`).
 
 ## Related widgets
 
-Part of the [Übersicht Widget Suite](https://github.com/jke48222/widget-suite): 12 widgets that share one design system.
+Part of the [Übersicht Widget Suite](https://github.com/jke48222/widget-suite): 16 widgets that share one design system.
 
+- [Agent Fleet](https://github.com/jke48222/agent-fleet-widget)
 - [Animated Wallpaper](https://github.com/jke48222/animated-wallpaper-widget)
 - [Clipboard History](https://github.com/jke48222/clipboard-history-widget)
 - [Daily Astronomy Photo](https://github.com/jke48222/daily-astronomy-photo-widget)
 - [Daily Tarot](https://github.com/jke48222/daily-tarot-widget)
 - [GitHub Contributions](https://github.com/jke48222/github-contributions-widget)
+- [Keys & Pads](https://github.com/jke48222/keys-and-pads-widget)
 - [Now Playing](https://github.com/jke48222/now-playing-widget)
+- [Pi Fleet](https://github.com/jke48222/pi-fleet-widget)
 - [Recent Album Covers](https://github.com/jke48222/recent-album-covers-widget)
 - [Recent Downloads](https://github.com/jke48222/recent-downloads-widget)
 - [Rotating 3D Model](https://github.com/jke48222/rotating-3d-model-widget)
 - [Spinning Globe](https://github.com/jke48222/spinning-globe-widget)
 - [Wallpaper Switcher](https://github.com/jke48222/wallpaper-switcher-widget)
+- [Window Pet](https://github.com/jke48222/window-pet-widget)
 
 ## License
 
