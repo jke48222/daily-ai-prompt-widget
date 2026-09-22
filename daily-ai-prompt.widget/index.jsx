@@ -355,37 +355,42 @@ const resolve = (key, props, parse, mock) => {
 const FETCH = `$HOME/.config/widgetsuite/ai-daily-pull-fetch.py`;
 export const command = `/usr/bin/python3 "${FETCH}" 2>/dev/null || echo ""`;
 export const refreshFrequency = 1000 * 60 * 30; // helper caches daily; just re-read
-
 const FONTS = "daily-ai-prompt.widget/fonts";
-// The prompt as a typed card: cream stock with a fibre grain and a printed
-// border rule, a red rubber-stamped PROMPT OF THE DAY, a running number, the
-// prompt in a typewriter face, and the provider marks in ink. Click the text
-// to copy it and open a chat; click the mark to switch models.
-export const className = card("dark", 320, 204, ...LAYOUT.aiDailyPull) + `
-  @font-face { font-family: "Special Elite"; src: url("${FONTS}/SpecialElite-400.woff2") format("woff2"); }
-  @font-face { font-family: "Barlow Condensed"; src: url("${FONTS}/BarlowCondensed-700.woff2") format("woff2"); font-weight: 700; }
-  --type: "Special Elite", "Courier New", monospace; --cond: "Barlow Condensed", "Arial Narrow", sans-serif; --ink: #2B2622; --red: #B8332B;
-  background: linear-gradient(180deg, #F6F1E5 0%, #EFE8D8 100%); border-radius: 4px; backdrop-filter: none; padding: 18px 20px 16px; user-select:none; -webkit-user-select:none;
-  box-shadow: 0 24px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.08), inset 0 0 0 7px #F3EDDF, inset 0 0 0 8px rgba(43,38,34,0.18);
-  color: var(--ink);
-  &::before { content:""; position:absolute; inset:0; pointer-events:none; opacity:0.5; mix-blend-mode: multiply; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E"); }
-  .ws-drag { top: 10px; left: 10px; color:#9a9184; background: rgba(0,0,0,0.04); } .ws-resize { bottom: 10px; right: 10px; color:#9a9184; background: rgba(0,0,0,0.04); }
-  .head { display:flex; justify-content:space-between; align-items:center; margin-top: 2px; }
-  .tag { font: 700 8px/1 var(--cond); letter-spacing: 2.4px; color: var(--red); text-transform:uppercase; border: 1.5px solid var(--red); padding: 4px 6px 3px; transform: rotate(-2.5deg); opacity: 0.85; mix-blend-mode: multiply; }
-  .no { font: 12px/1 var(--type); color:#8A8378; letter-spacing: 1px; }
-  .wrap { position:absolute; left: 20px; right: 20px; top: 46px; bottom: 34px; cursor:pointer; display:flex; align-items:center; }
-  .prompt { font: 15.5px/1.38 var(--type); color: var(--ink); display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
-  .foot { position:absolute; left: 20px; right: 20px; bottom: 12px; display:flex; justify-content:space-between; align-items:center; }
-  .hint { font: 700 7.5px/1 var(--cond); letter-spacing: 1.8px; color:#8A8378; text-transform:uppercase; }
-  .ai-switch { position:absolute; bottom:10px; right:14px; z-index:20; display:flex; flex-direction:row-reverse; align-items:center; gap:7px; }
-  .ailogo  { width:20px; height:20px; display:block; }
-  .ailogo.claude { color:#B8332B; fill:currentColor; } .ailogo.openai { color: var(--ink); fill:currentColor; } .ailogo.gemini { fill:currentColor; }
-  .ai-current { display:flex; cursor:pointer; opacity:0.92; padding:3px; border-radius:6px; transition:opacity .15s ease, background .15s ease; }
-  .ai-current:hover { opacity:1; background:rgba(43,38,34,0.08); }
-  .ai-menu { display:none; align-items:center; gap:5px; padding:3px 5px; border-radius:6px; background:#FBF9F3; box-shadow: 0 2px 6px rgba(0,0,0,0.2), 0 0 0 1px rgba(43,38,34,0.15); }
+// A felt letter board: a solid oak frame with mitred corners around grooved
+// black felt, and the prompt set in white plastic letters, one per slot, the
+// way the boards at cafés spell out the specials. Click the felt to copy the
+// prompt and open a chat; the small marks bottom right switch the model.
+export const className = card("dark", 340, 250, ...LAYOUT.aiDailyPull) + `
+  @font-face { font-family: "Archivo Black"; src: url("${FONTS}/ArchivoBlack-400.woff2") format("woff2"); }
+  --felt: #151515; --letter: #F4F3EE;
+  padding: 16px; border-radius: 4px; backdrop-filter: none; overflow: hidden; user-select:none; -webkit-user-select:none;
+  background: linear-gradient(90deg, #DDB97E 0%, #C99F62 28%, #D8B476 55%, #C39A5E 82%, #D6B278 100%);
+  box-shadow: 0 30px 50px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.25), 0 0 0 1px #8F6D3A;
+  &::before { content:""; position:absolute; inset:0; pointer-events:none; opacity:0.5; mix-blend-mode: multiply; background: repeating-linear-gradient(0deg, rgba(90,50,0,0.10) 0 1px, rgba(0,0,0,0) 1px 6px), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E"); }
+  .ws-drag { top: 3px; left: 3px; color: #5b4322; background: rgba(0,0,0,0.08); } .ws-resize { bottom: 3px; right: 3px; color: #5b4322; background: rgba(0,0,0,0.08); }
+  .mitre { position:absolute; width: 16px; height: 16px; pointer-events:none; overflow:hidden; }
+  .mitre::before { content:""; position:absolute; left:-4px; top:7px; width: 26px; height: 1px; background: rgba(60,35,5,0.45); transform: rotate(45deg); }
+  .mitre.tl { left:0; top:0; } .mitre.br { right:0; bottom:0; } .mitre.tr { right:0; top:0; transform: scaleX(-1); } .mitre.bl { left:0; bottom:0; transform: scaleX(-1); }
+  .felt { position:absolute; inset: 16px; background: var(--felt); cursor:pointer; overflow:hidden;
+          box-shadow: inset 0 2px 6px rgba(0,0,0,0.9), inset 0 0 0 1px #000; }
+  .felt::before { content:""; position:absolute; inset:0; pointer-events:none; opacity:0.9; mix-blend-mode: screen; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E"); }
+  .felt::after { content:""; position:absolute; inset:0; pointer-events:none; background: repeating-linear-gradient(180deg, rgba(0,0,0,0) 0 21px, rgba(255,255,255,0.045) 21px 22px, rgba(0,0,0,0.65) 22px 24px); background-position: 0 6px; }
+  .rows { position:absolute; left: 12px; right: 12px; top: 6px; z-index: 2; }
+  .row { height: 24px; display:flex; }
+  .ch { position:relative; width: 12.2px; text-align:center; font: 400 14px/24px "Archivo Black", "Arial Black", sans-serif; color: var(--letter); letter-spacing: 0;
+        text-shadow: 0 1px 0 #C7C6C0, 0 2px 0 #9E9D98, 0 3px 2px rgba(0,0,0,0.75); transform: translateY(var(--dy, 0)) rotate(var(--rot, 0)); }
+  .ch.sp { width: 9px; }
+  .ch.small { font-size: 9px; width: 8.6px; letter-spacing: 0.3px; }
+  .foot { position:absolute; left: 12px; right: 12px; bottom: 6px; height: 24px; z-index: 2; display:flex; justify-content:space-between; align-items:center; }
+  .num { display:flex; }
+  .ai-switch { position:absolute; bottom: 3px; right: 0; z-index:20; display:flex; flex-direction:row-reverse; align-items:center; gap:6px; }
+  .ailogo { width: 16px; height: 16px; display:block; filter: drop-shadow(0 1px 0 #9E9D98) drop-shadow(0 2px 1px rgba(0,0,0,0.6)); }
+  .ailogo.claude { color: var(--letter); fill: currentColor; } .ailogo.openai { color: var(--letter); fill: currentColor; } .ailogo.gemini { fill: currentColor; }
+  .ai-current { display:flex; cursor:pointer; padding: 2px; border-radius: 4px; } .ai-current:hover { background: rgba(255,255,255,0.08); }
+  .ai-menu { display:none; align-items:center; gap:6px; padding: 3px 5px; border-radius: 4px; background: #2a2a2a; box-shadow: 0 0 0 1px #000; }
   .ai-switch.open .ai-menu { display:flex; }
-  .ai-opt { display:flex; align-items:center; justify-content:center; cursor:pointer; background:none; border:0; padding:2px; border-radius:5px; opacity:0.6; }
-  .ai-opt:hover { opacity:1; background:rgba(43,38,34,0.08); } .ai-opt.sel { opacity:1; background:rgba(43,38,34,0.12); }
+  .ai-opt { display:flex; align-items:center; justify-content:center; cursor:pointer; background:none; border:0; padding:2px; border-radius:4px; opacity:0.55; }
+  .ai-opt:hover { opacity:1; background: rgba(255,255,255,0.1); } .ai-opt.sel { opacity:1; }
 `;
 // A bundled library of universal, ready-to-paste prompts. Used as the fallback
 // (selected by day of year) when no API key is configured, so the widget is
@@ -550,26 +555,35 @@ const Switcher = ({ active }) =>
 
 // Memo of the last render so the periodic refresh doesn't re-render (and flash)
 // the card when neither the prompt nor the active model has changed.
+
+
+// Wrap the prompt into letter-board rows (whole words, uppercase) and choose the
+// widest letter size that still fits the felt.
+const COLS = 25, ROWS = 7;
+const wrapWords = (text, cols) => { const out = []; let line = ""; for (const w of text.toUpperCase().split(/\s+/)) { const cand = line ? `${line} ${w}` : w; if (cand.length <= cols) line = cand; else { if (line) out.push(line); line = w.length > cols ? w.slice(0, cols) : w; } } if (line) out.push(line); return out; };
+const jitter = (i) => ({ "--dy": `${((i * 7) % 3) - 1}px`, "--rot": `${(((i * 13) % 5) - 2) * 0.6}deg` });
 let __aiSig = null, __aiEl = null;
-
-
 export const render = (props) => {
   if (isLoading(props)) return <Skel tint={T.tintPurple} />;
-  const doy = dayOfYear();
-  const prompt = parseHost(props.output) || PROMPTS[doy % PROMPTS.length];
-  const active = getProvider(props.output);
+  const doy = dayOfYear(); const prompt = parseHost(props.output) || PROMPTS[doy % PROMPTS.length]; const active = getProvider(props.output);
   const sig = JSON.stringify({ prompt, active, doy });
   if (sig === __aiSig && __aiEl) return __aiEl;
   __aiSig = sig;
-  const openChat = () => { const p = getProvider(props.output); const url = PROVIDER_CHAT[p] || PROVIDER_CHAT.claude; run(`printf %s ${shq(prompt)} | pbcopy; open ${shq(url)}`); };
+  let rows = wrapWords(prompt, COLS); let small = false;
+  if (rows.length > ROWS) { rows = wrapWords(prompt, 35); small = true; }
+  rows = rows.slice(0, ROWS + (small ? 1 : 0));
+  const openChat = () => { const p = getProvider(props.output); run(`printf %s ${shq(prompt)} | pbcopy; open ${shq(PROVIDER_CHAT[p] || PROVIDER_CHAT.claude)}`); };
+  let k = 0;
   return (__aiEl = (
     <div aria-label={`Daily prompt: ${prompt}`}>
+      <span className="mitre tl" /><span className="mitre tr" /><span className="mitre bl" /><span className="mitre br" />
+      <div className="felt" onClick={openChat} title="Copy and open a chat">
+        <div className="rows">{rows.map((r, ri) => <div className="row" key={ri}>{r.split("").map((c, ci) => <span key={ci} className={`ch ${c === " " ? "sp" : ""} ${small ? "small" : ""}`} style={jitter(k++)}>{c === " " ? "" : c}</span>)}</div>)}</div>
+        <div className="foot"><div className="num">{`NO ${String(doy).padStart(3, "0")}`.split("").map((c, i) => <span key={i} className={`ch small ${c === " " ? "sp" : ""}`} style={jitter(200 + i)}>{c === " " ? "" : c}</span>)}</div></div>
+      </div>
+      <Switcher active={active} />
       <DragHandle k="aiDailyPull" />
       <ResizeHandle k="aiDailyPull" />
-      <div className="head"><span className="tag">Prompt of the day</span><span className="no">No. {String(doy).padStart(3, "0")}</span></div>
-      <div className="wrap" onClick={openChat} title="Copy and open a chat"><div className="prompt">{prompt}</div></div>
-      <div className="foot"><span className="hint">Click to copy &amp; open · {PROVIDER_LABEL[active]}</span></div>
-      <Switcher active={active} />
     </div>
   ));
 };

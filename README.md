@@ -1,6 +1,6 @@
 # daily-ai-prompt
 
-> One daily AI prompt on a frosted-glass panel; click to copy and open a new chat.
+> One daily AI prompt spelled out on a felt letter board; click to copy and open a new chat.
 
 [![Release](https://img.shields.io/github/v/release/jke48222/daily-ai-prompt-widget?label=release)](https://github.com/jke48222/daily-ai-prompt-widget/releases/latest) [![License: MIT](https://img.shields.io/github/license/jke48222/daily-ai-prompt-widget)](LICENSE) ![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
 
@@ -13,7 +13,7 @@ to get a fresh, personalized prompt generated daily.
 
 ![screenshot](media/screenshot.png)
 
-The prompt is a typed card: cream stock with a fibre grain and a printed border rule, a red rubber-stamped PROMPT OF THE DAY, a running number, and the provider marks in ink. Typefaces: Special Elite and Barlow Condensed. All fonts are under the SIL Open Font License; see `daily-ai-prompt.widget/fonts/OFL.txt`.
+The prompt is a felt letter board: a solid oak frame with mitred corners around grooved black felt, and the words set one plastic letter per slot, each sitting a touch off true the way real letters do. Click the felt to copy the prompt and open a chat; the marks bottom right switch the model. Typeface: Archivo Black. All fonts are under the SIL Open Font License; see `daily-ai-prompt.widget/fonts/OFL.txt`.
 
 ## Before and after
 
