@@ -13,13 +13,17 @@ to get a fresh, personalized prompt generated daily.
 
 ![screenshot](media/screenshot.png)
 
+The prompt is a typed card: cream stock with a fibre grain and a printed border rule, a red rubber-stamped PROMPT OF THE DAY, a running number, and the provider marks in ink. Typefaces: Special Elite and Barlow Condensed. All fonts are under the SIL Open Font License; see `daily-ai-prompt.widget/fonts/OFL.txt`.
+
+## Before and after
+
+![Before and after](media/before-after.png)
+
 ### On the desktop
 
 The widget running alongside the full set:
 
-![The Übersicht widget suite running on a desktop](https://raw.githubusercontent.com/jke48222/widget-suite/main/homescreen.gif)
-
-[Full-resolution video](media/homescreen.mp4)
+![The Übersicht widget suite composed on one desktop](https://raw.githubusercontent.com/jke48222/widget-suite/main/homescreen.png)
 
 ## Requirements
 
