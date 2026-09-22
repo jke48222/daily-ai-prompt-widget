@@ -2,6 +2,10 @@
 
 > One daily AI prompt on a frosted-glass panel; click to copy and open a new chat.
 
+[![Release](https://img.shields.io/github/v/release/jke48222/daily-ai-prompt-widget?label=release)](https://github.com/jke48222/daily-ai-prompt-widget/releases/latest) [![License: MIT](https://img.shields.io/github/license/jke48222/daily-ai-prompt-widget)](LICENSE) ![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
+
+[Übersicht gallery](https://tracesof.net/uebersicht-widgets/) · [Widget suite](https://github.com/jke48222/widget-suite) · [Download](https://github.com/jke48222/daily-ai-prompt-widget/releases/latest) · [Setup guide](docs/SETUP.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
+
 A widget for [Übersicht](http://tracesof.net/uebersicht/). The widget itself is
 self-contained in `index.jsx`. Out of the box it rotates through a bundled
 prompt library; connect it to an AI API — Claude, ChatGPT, or Gemini (below) —
@@ -11,19 +15,37 @@ to get a fresh, personalized prompt generated daily.
 
 ### On the desktop
 
-The widget shown running alongside the full set:
+The widget running alongside the full set:
 
-[![Homescreen demo — click to play](media/homescreen-poster.png)](media/homescreen.mp4)
+![The Übersicht widget suite running on a desktop](https://raw.githubusercontent.com/jke48222/widget-suite/main/homescreen.gif)
+
+[Full-resolution video](media/homescreen.mp4)
+
+## Requirements
+
+- macOS with [Übersicht](https://tracesof.net/uebersicht/) installed (`brew install --cask ubersicht`)
+- Optional: an AI API (see below)
 
 ## Install
 
-1. Install and run [Übersicht](http://tracesof.net/uebersicht/).
-2. Unzip `daily-ai-prompt.widget.zip`, or copy the `daily-ai-prompt.widget`
-   folder into your Übersicht widgets directory:
-   `~/Library/Application Support/Übersicht/widgets/`
-3. Refresh Übersicht (menu bar icon -> Refresh All).
+If you don't have Übersicht yet:
+
+```sh
+brew install --cask ubersicht
+```
+
+**One-click.** Clone the repo and run the installer. It copies the widget into Übersicht's widgets folder, installs any helper scripts, and runs setup if the widget needs it. Safe to re-run.
+
+```sh
+git clone https://github.com/jke48222/daily-ai-prompt-widget.git
+cd daily-ai-prompt-widget && ./install.sh
+```
+
+**Manual.** Download `daily-ai-prompt.widget.zip` from the [latest release](https://github.com/jke48222/daily-ai-prompt-widget/releases/latest), unzip it, and put the `daily-ai-prompt.widget` folder in `~/Library/Application Support/Übersicht/widgets/`. Then refresh Übersicht (menu bar icon → Refresh All).
 
 At this point the widget works using the bundled `PROMPTS` library.
+
+Blank widget? Run `./check.sh` for a pass/fail diagnosis, or see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
 ## Connect to an AI API (optional)
 
@@ -63,7 +85,7 @@ one key file. Models are set near the top of `ai-daily-pull-fetch.py`.
 Your key never leaves your machine and is never committed (see `.gitignore`).
 The model is set near the top of `ai-daily-pull-fetch.py` (`MODEL = ...`).
 
-## How to edit
+## Customization
 
 - Bundled fallback prompts: the `PROMPTS` array in `index.jsx`.
 - Destination on click: the URL in the `onClick` handler in `render()`.
@@ -74,8 +96,12 @@ The model is set near the top of `ai-daily-pull-fetch.py` (`MODEL = ...`).
 - `daily-ai-prompt.widget/index.jsx` — the widget (provider logos are inline SVG)
 - `setup/ai-daily-pull-fetch.py` — optional AI helper for Claude/ChatGPT/Gemini (no key included)
 - `setup/profile.example.txt` — optional profile template
+- `install.sh` / `install.command` — one-click installer (copies the widget into Übersicht and installs any helpers)
+- `check.sh` — read-only setup diagnostics; prints pass/fail per item
 
-## Other widgets
+## Related widgets
+
+Part of the [Übersicht Widget Suite](https://github.com/jke48222/widget-suite): 12 widgets that share one design system.
 
 - [Animated Wallpaper](https://github.com/jke48222/animated-wallpaper-widget)
 - [Clipboard History](https://github.com/jke48222/clipboard-history-widget)
@@ -88,6 +114,10 @@ The model is set near the top of `ai-daily-pull-fetch.py` (`MODEL = ...`).
 - [Rotating 3D Model](https://github.com/jke48222/rotating-3d-model-widget)
 - [Spinning Globe](https://github.com/jke48222/spinning-globe-widget)
 - [Wallpaper Switcher](https://github.com/jke48222/wallpaper-switcher-widget)
+
+## License
+
+MIT. See [LICENSE](LICENSE).
 
 ## Author
 
