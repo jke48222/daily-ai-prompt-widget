@@ -1,6 +1,6 @@
 # daily-ai-prompt
 
-> One daily AI prompt spelled out on a felt letter board; click to copy and open a new chat.
+> One daily AI prompt on a frosted-glass panel; click to copy and open a new chat.
 
 [![Release](https://img.shields.io/github/v/release/jke48222/daily-ai-prompt-widget?label=release)](https://github.com/jke48222/daily-ai-prompt-widget/releases/latest) [![License: MIT](https://img.shields.io/github/license/jke48222/daily-ai-prompt-widget)](LICENSE) ![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
 
@@ -13,17 +13,13 @@ to get a fresh, personalized prompt generated daily.
 
 ![screenshot](media/screenshot.png)
 
-The prompt is a felt letter board: a solid oak frame with mitred corners around grooved black felt, and the words set one plastic letter per slot, each sitting a touch off true the way real letters do. Click the felt to copy the prompt and open a chat; the marks bottom right switch the model. Typeface: Archivo Black. All fonts are under the SIL Open Font License; see `daily-ai-prompt.widget/fonts/OFL.txt`.
-
-## Before and after
-
-![Before and after](media/before-after.png)
-
 ### On the desktop
 
 The widget running alongside the full set:
 
-![The Übersicht widget suite composed on one desktop](https://raw.githubusercontent.com/jke48222/widget-suite/main/homescreen.png)
+![The Übersicht widget suite running on a desktop](https://raw.githubusercontent.com/jke48222/widget-suite/main/homescreen.gif)
+
+[Full-resolution video](media/homescreen.mp4)
 
 ## Requirements
 
@@ -105,23 +101,19 @@ The model is set near the top of `ai-daily-pull-fetch.py` (`MODEL = ...`).
 
 ## Related widgets
 
-Part of the [Übersicht Widget Suite](https://github.com/jke48222/widget-suite): 16 widgets that share one design system.
+Part of the [Übersicht Widget Suite](https://github.com/jke48222/widget-suite): 12 widgets that share one design system.
 
-- [Agent Fleet](https://github.com/jke48222/agent-fleet-widget)
 - [Animated Wallpaper](https://github.com/jke48222/animated-wallpaper-widget)
 - [Clipboard History](https://github.com/jke48222/clipboard-history-widget)
 - [Daily Astronomy Photo](https://github.com/jke48222/daily-astronomy-photo-widget)
 - [Daily Tarot](https://github.com/jke48222/daily-tarot-widget)
 - [GitHub Contributions](https://github.com/jke48222/github-contributions-widget)
-- [Keys & Pads](https://github.com/jke48222/keys-and-pads-widget)
 - [Now Playing](https://github.com/jke48222/now-playing-widget)
-- [Pi Fleet](https://github.com/jke48222/pi-fleet-widget)
 - [Recent Album Covers](https://github.com/jke48222/recent-album-covers-widget)
 - [Recent Downloads](https://github.com/jke48222/recent-downloads-widget)
 - [Rotating 3D Model](https://github.com/jke48222/rotating-3d-model-widget)
 - [Spinning Globe](https://github.com/jke48222/spinning-globe-widget)
 - [Wallpaper Switcher](https://github.com/jke48222/wallpaper-switcher-widget)
-- [Window Pet](https://github.com/jke48222/window-pet-widget)
 
 ## License
 
